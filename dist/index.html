@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="moa에서 추적하는 브랜드와 확인된 행사를 모아보세요.">
+  <meta name="theme-color" content="#f6f7fb">
+  <title>moa · 브랜드 캘린더</title>
+  <style>
+    :root { color-scheme: light; --ink:#20213a; --muted:#78809c; --purple:#6956df; --line:#e7e9f1; --soft:#f6f7fb; --mint:#e8f6f2; --orange:#fff2e5; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--soft); color:var(--ink); font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans KR",sans-serif; }
+    a { color:inherit; }
+    .wrap { width:min(1080px, calc(100% - 40px)); margin:0 auto; }
+    header { background:#fff; border-bottom:1px solid var(--line); }
+    .nav { min-height:76px; display:flex; align-items:center; justify-content:space-between; gap:20px; }
+    .brand { display:flex; align-items:center; gap:12px; font-size:23px; font-weight:800; letter-spacing:-.05em; }
+    .mark { width:34px; height:34px; display:grid; grid-template-columns:1fr 1fr; gap:3px; transform:rotate(-9deg); }
+    .mark i { border-radius:6px; background:#7560eb; }.mark i:nth-child(2){background:#76d6c3}.mark i:nth-child(3){background:#8d75f3}.mark i:nth-child(4){background:#f4bd74}
+    .nav-note { color:var(--muted); font-size:14px; }
+    main { padding:42px 0 68px; }
+    .hero { display:flex; justify-content:space-between; align-items:flex-end; gap:24px; margin-bottom:28px; }
+    .eyebrow { color:var(--purple); font-weight:750; letter-spacing:.12em; font-size:12px; text-transform:uppercase; }
+    h1 { margin:9px 0 8px; font-size:clamp(30px,5vw,43px); letter-spacing:-.055em; line-height:1.15; }
+    .intro { margin:0; color:var(--muted); font-size:16px; line-height:1.7; }
+    .privacy { border:1px solid #e6e2ff; background:#f0eeff; color:#5144ad; padding:10px 14px; border-radius:13px; font-size:13px; white-space:nowrap; }
+    .layout { display:grid; grid-template-columns:minmax(0,1.7fr) minmax(260px,.85fr); gap:20px; align-items:start; }
+    .card { background:#fff; border:1px solid var(--line); border-radius:20px; box-shadow:0 10px 34px rgba(31,34,64,.045); }
+    .calendar { padding:24px; }
+    .cal-head { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-bottom:17px; }
+    .cal-head h2,.section-title { margin:0; font-size:20px; letter-spacing:-.035em; }
+    .legend { display:flex; gap:14px; color:var(--muted); font-size:13px; }
+    .legend span { display:inline-flex; gap:7px; align-items:center; }
+    .dot { width:9px; height:9px; border-radius:50%; background:#a993fa; }.dot.popup{background:#6956df}
+    .week,.grid { display:grid; grid-template-columns:repeat(7,minmax(0,1fr)); }
+    .week { border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:11px 0; color:#9ba1b6; font-size:13px; text-align:center; }
+    .week span:first-child { color:#ed7e8e; }
+    .day { min-height:112px; padding:9px 7px; border-bottom:1px solid var(--line); border-right:1px solid var(--line); font-size:13px; }
+    .day:nth-child(7n){border-right:0}.day:nth-last-child(-n+7){border-bottom:0}
+    .num { color:#68708a; }.dim .num{color:#c4c8d4}.today .num { width:29px;height:29px;display:grid;place-items:center;background:var(--purple);color:#fff;border-radius:50%;margin:-5px 0 3px; }
+    .event-pill { display:block; margin-top:8px; padding:6px 7px; border-radius:8px; background:#eeeaff; color:#493ba7; font-size:12px; font-weight:700; line-height:1.45; overflow-wrap:anywhere; text-decoration:none; }
+    .event-pill.popup { background:#6956df; color:#fff; }
+    .event-pill:hover { background:#e5e0ff; }
+    .footnote { border-top:1px solid var(--line); padding-top:14px; margin-top:12px; color:var(--muted); font-size:13px; line-height:1.6; }
+    aside { display:grid; gap:18px; }
+    .side-card { padding:22px; }
+    .section-title { margin-bottom:16px; }
+    .brand-list { list-style:none; padding:0; margin:0; display:grid; gap:10px; }
+    .brand-item { display:flex; align-items:center; gap:11px; padding:11px 12px; border-radius:13px; background:#fafaff; min-width:0; }
+    .avatar { width:36px;height:36px; flex:none; display:grid; place-items:center; border-radius:12px; background:var(--mint);color:#359f8d;font-weight:800; }
+    .bname { font-weight:700; font-size:14px; overflow-wrap:anywhere; }
+    .handle { color:var(--muted); font-size:12px; margin-top:3px; }
+    .event-card { padding:18px; border:1px solid var(--line); border-radius:15px; }
+    .event-card + .event-card { margin-top:10px; }
+    .event-date { color:var(--purple); font-size:12px; font-weight:750; margin-bottom:7px; }
+    .event-name { margin:0 0 8px; font-size:15px; line-height:1.5; }
+    .event-meta { color:var(--muted); font-size:13px; line-height:1.6; }
+    .source { display:inline-block; margin-top:9px; color:var(--purple); font-size:13px; font-weight:700; }
+    .empty { color:var(--muted); font-size:14px; line-height:1.7; }
+    footer { border-top:1px solid var(--line); padding:22px 0; color:var(--muted); font-size:13px; }
+    @media(max-width:760px){.wrap{width:min(100% - 24px,620px)}main{padding-top:30px}.hero{align-items:flex-start;flex-direction:column}.privacy{white-space:normal}.layout{grid-template-columns:1fr}.calendar{padding:15px}.day{min-height:94px;padding:8px 4px}.event-pill{font-size:11px;padding:5px}.cal-head{align-items:flex-start;flex-direction:column}.legend{flex-wrap:wrap}}
+    @media(max-width:400px){.day{min-height:82px}.event-pill{font-size:10px}.week{font-size:12px}}
+  </style>
+</head>
+<body>
+  <header><div class="wrap nav"><div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>moa<span style="color:#7560eb">.</span></div><div class="nav-note">좋아하는 브랜드의 행사 모아보기</div></div></header>
+  <main class="wrap">
+    <section class="hero"><div><div class="eyebrow">Brand moments, all in one place</div><h1>브랜드 행사 캘린더</h1><p class="intro">추적 중인 브랜드와 확인된 행사를 한눈에 살펴보세요.</p></div><div class="privacy">읽기 전용 공개 페이지 · 관리 정보는 표시하지 않아요</div></section>
+    <div class="layout">
+      <section class="card calendar" aria-label="2026년 11월 행사 달력">
+        <div class="cal-head"><h2 id="month-title">브랜드 행사</h2><div class="legend"><span><i class="dot popup"></i>팝업스토어</span><span><i class="dot"></i>일반 행사</span><span>★ 높은 할인</span></div></div>
+        <div class="week" aria-hidden="true"><span>일</span><span>월</span><span>화</span><span>수</span><span>목</span><span>금</span><span>토</span></div>
+        <div class="grid" id="days"></div>
+        <div class="footnote" id="feed-status">확정된 행사만 달력에 표시합니다.</div>
+      </section>
+      <aside>
+        <section class="card side-card"><h2 class="section-title">추적 중인 브랜드 <span id="brand-count" style="color:var(--muted);font-size:14px;font-weight:600"></span></h2><ul class="brand-list" id="brands"></ul></section>
+        <section class="card side-card"><h2 class="section-title">확인된 행사</h2><div id="confirmed-events"><p class="empty">행사 정보를 불러오는 중이에요.</p></div></section>
+      </aside>
+    </div>
+  </main>
+  <footer><div class="wrap">moa · 브랜드 행사를 모아보는 곳</div></footer>
+  <script>
+    const $ = selector => document.querySelector(selector);
+    const monthKey = new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit'}).format(new Date());
+    const [year,month] = monthKey.split('-').map(Number);
+    const monthName = new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',year:'numeric',month:'long'}).format(new Date(`${monthKey}-01T00:00:00+09:00`));
+    $('#month-title').textContent=monthName;
+    function appendText(parent,tag,className,value){const node=document.createElement(tag);if(className)node.className=className;node.textContent=value;parent.append(node);return node;}
+    function renderBrands(brands){const list=$('#brands');list.replaceChildren();$('#brand-count').textContent=String(brands.length);if(!brands.length){appendText(list,'li','empty','아직 추적 중인 브랜드가 없어요.');return;}
+      for(const brand of brands){const item=document.createElement('li');item.className='brand-item';const avatar=appendText(item,'span','avatar',[...(brand.name||'?')][0]||'?');avatar.setAttribute('aria-hidden','true');const details=document.createElement('div');appendText(details,'div','bname',brand.name||'이름 미등록');appendText(details,'div','handle',brand.handle?`@${brand.handle}`:'');item.append(details);if(brand.instagramUrl){item.title='인스타그램 프로필 열기';item.style.cursor='pointer';item.addEventListener('click',()=>window.open(brand.instagramUrl,'_blank','noopener,noreferrer'));}list.append(item);}}
+    function eventDateLabel(value){const [y,m,d]=value.split('-').map(Number);return new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',month:'long',day:'numeric',weekday:'short'}).format(new Date(Date.UTC(y,m-1,d,3)));}
+    function renderCalendar(events){const grid=$('#days');grid.replaceChildren();const offset=new Date(Date.UTC(year,month-1,1)).getUTCDay();const count=new Date(Date.UTC(year,month,0)).getUTCDate();const todayKey=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());const inMonth=events.filter(event=>event.date.startsWith(monthKey));const byDay=new Map();for(const event of inMonth){const day=Number(event.date.slice(8));if(!byDay.has(day))byDay.set(day,[]);byDay.get(day).push(event);}
+      for(let cell=0;cell<offset+count;cell++){const day=cell-offset+1;const box=document.createElement('div');box.className='day';if(day<1){box.classList.add('dim');grid.append(box);continue;}if(day>count)break;const key=`${monthKey}-${String(day).padStart(2,'0')}`;if(key===todayKey)box.classList.add('today');appendText(box,'span','num',String(day));for(const event of byDay.get(day)||[]){const link=appendText(box,'a',`event-pill ${event.type==='popup'?'popup':''}`,event.title);link.title=`${event.title} · ${event.brandName}`;if(event.sourceUrl){link.href=event.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';}else{link.removeAttribute('href');link.setAttribute('aria-disabled','true');}if(Number(event.discount)>=50){const star=document.createElement('strong');star.textContent=' ★';link.append(star);}}grid.append(box);}}
+    function renderEvents(events){const host=$('#confirmed-events');host.replaceChildren();if(!events.length){appendText(host,'p','empty','현재 확인된 행사가 없어요.');return;}
+      const sorted=[...events].sort((a,b)=>a.date.localeCompare(b.date));for(const event of sorted){const article=document.createElement('article');article.className='event-card';const end=event.endTime?` · ${event.endTime} 종료`:'';appendText(article,'div','event-date',`${eventDateLabel(event.date)}${end}`);appendText(article,'h3','event-name',event.title);const terms=[];if(Number(event.discount)>0)terms.push(`${Number(event.discount)}% 할인`);if(Number(event.couponDiscount)>0)terms.push(`${Number(event.couponDiscount)}% 쿠폰`);appendText(article,'div','event-meta',`${event.brandName}${terms.length?` · ${terms.join(' + ')}`:''}`);if(event.sourceUrl){const link=appendText(article,'a','source','원문 확인하기');link.href=event.sourceUrl;link.target='_blank';link.rel='noopener noreferrer';}host.append(article);}}
+    async function loadFeed(){try{const response=await fetch('/api/public-feed',{headers:{accept:'application/json'},cache:'no-store'});if(!response.ok)throw new Error('feed unavailable');const data=await response.json();if(!Array.isArray(data.brands)||!Array.isArray(data.events))throw new Error('invalid feed');renderBrands(data.brands);renderCalendar(data.events);renderEvents(data.events);const time=new Intl.DateTimeFormat('ko-KR',{timeZone:'Asia/Seoul',hour:'2-digit',minute:'2-digit'}).format(new Date(data.updatedAt||Date.now()));$('#feed-status').textContent=`확정된 행사만 표시합니다. 마지막 데이터 확인: ${time} (한국 시간)`;}catch{$('#feed-status').textContent='행사 정보를 불러오지 못했어요. 잠시 후 다시 확인해 주세요.';$('#brands').replaceChildren();$('#confirmed-events').replaceChildren();appendText($('#confirmed-events'),'p','empty','공개 행사 정보를 불러오지 못했습니다.');$('#days').replaceChildren();}}
+    loadFeed();setInterval(loadFeed,5*60*1000);
+  </script>
+</body>
+</html>
+
